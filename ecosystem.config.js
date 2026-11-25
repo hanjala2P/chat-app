@@ -4,7 +4,7 @@ module.exports = {
       name: 'project_format',
       script: './dist/server.js',
 
-      // 🔴 এই লাইনটা যোগ করো
+      
       node_args: '-r tsconfig-paths/register',
 
       instances: 'max',
