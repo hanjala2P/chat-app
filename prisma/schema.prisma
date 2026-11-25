@@ -54,6 +54,9 @@ model User {
   verification     Verification? 
   deviceHistory    DeviceHistory[]  
   notifications    Notification[]  
+  participant Participant[]
+  senderMessage Message[] @relation("SentMessages")
+  receiverMessage Message[] @relation("receiverMessage")
 }
 
 model DeviceHistory {
@@ -94,8 +97,45 @@ model Notification {
    user    User?     @relation(fields: [receiverId], references: [id]) 
 }
 
+//  chat app **********************************
+
+model Chats {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  status Chat_status @default(active)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  participant Participant[]
+  message Message[]
+}
+model Participant{
+ id String @id @default(auto()) @map("_id")@db.ObjectId
+ chatId String @unique @db.ObjectId
+ userId String @db.ObjectId
+
+ chat Chats @relation(fields: [chatId], references: [id])
+ user User @relation(fields: [userId],references: [id])
+}
+model Message{
+  id String @id @default(auto()) @map("_id")@db.ObjectId
+  chatId String @db.ObjectId
+  text String?
+  mgURL String?
+  isSeen Boolean @default(false)
+  receiverId String @db.ObjectId
+  senderId String @db.ObjectId
+  chat Chats? @relation(fields: [chatId],references: [id])
+  receiver User @relation("receiverMessage",fields: [receiverId],references: [id])
+  sender User @relation("SentMessages", fields: [senderId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+}
+
 
 // Enums 
+enum Chat_status{
+  active
+  blocked
+}
 enum status {
   active
   blocked
