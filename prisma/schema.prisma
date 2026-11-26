@@ -56,7 +56,7 @@ model User {
   notifications    Notification[]  
   participant Participant[]
   senderMessage Message[] @relation("SentMessages")
-  receiverMessage Message[] @relation("receiverMessage")
+  receiverMessage Message[] @relation("ReceiverMessages")
 }
 
 model DeviceHistory {
@@ -97,49 +97,59 @@ model Notification {
    user    User?     @relation(fields: [receiverId], references: [id]) 
 }
 
-//  chat app **********************************
+
+// chat app====================
 
 model Chats {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-  status Chat_status @default(active)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  participant Participant[]
-  message Message[]
-}
-model Participant{
- id String @id @default(auto()) @map("_id")@db.ObjectId
- chatId String @unique @db.ObjectId
- userId String @db.ObjectId
+   id String @id @default(auto()) @map("_id") @db.ObjectId
+   status chat_status @default(active)
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
 
- chat Chats @relation(fields: [chatId], references: [id])
- user User @relation(fields: [userId],references: [id])
+   participant Participant[]
+   message Message[]
 }
-model Message{
-  id String @id @default(auto()) @map("_id")@db.ObjectId
-  chatId String @db.ObjectId
+
+model Participant {
+id String @id @default(auto()) @map("_id") @db.ObjectId
+chatId String @db.ObjectId
+userId String @db.ObjectId
+
+chat Chats @relation(fields: [chatId], references: [id])
+user User @relation(fields: [userId], references: [id])
+}
+
+
+model Message {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  chatId String  @db.ObjectId
   text String?
-  mgURL String?
+  mgUrl String?
   isSeen Boolean @default(false)
   receiverId String @db.ObjectId
   senderId String @db.ObjectId
-  chat Chats? @relation(fields: [chatId],references: [id])
-  receiver User @relation("receiverMessage",fields: [receiverId],references: [id])
+
+  chat Chats? @relation(fields: [chatId], references: [id])
+  receiver User @relation("ReceiverMessages",fields: [receiverId], references: [id])
   sender User @relation("SentMessages", fields: [senderId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
 }
 
 
+
 // Enums 
-enum Chat_status{
-  active
-  blocked
-}
 enum status {
   active
   blocked
 }
+
+enum chat_status {
+  blocked
+  active
+}
+ 
 enum Role {
   admin
   sub_admin
