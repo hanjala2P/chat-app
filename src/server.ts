@@ -5,7 +5,7 @@ import colors from "colors";
 import initiateSocketServer from "socketapp.js";
 
 let server: Server;
-const socketServer = initiateSocketServer(createServer(app))
+const socketServer =  initiateSocketServer(createServer(app))
 
 async function main() {
   server = app.listen(Number(config.port), config?.ip as string, () => {
